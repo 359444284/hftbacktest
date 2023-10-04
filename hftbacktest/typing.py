@@ -1,9 +1,7 @@
-from typing import Union, Callable, NewType, List
-
+from typing import Callable, NewType, List, Union
 from numba.experimental.jitclass.base import JitClassType
 from numpy.typing import NDArray
 from pandas import DataFrame
-
 
 Data = Union[str, NDArray, DataFrame]
 DataCollection = Union[Data, List[Data]]
