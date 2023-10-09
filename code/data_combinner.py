@@ -11,6 +11,7 @@ data_files = data_files[2:]
 print(data_files)
 
 out_dict = '../hftbacktest/data/customer_data/'
+os.makedirs(out_dict, exist_ok=True)
 
 predicted_info = pd.read_csv('model/model_output_modi.csv', header=0)
 predicted_info = predicted_info.astype(int)
