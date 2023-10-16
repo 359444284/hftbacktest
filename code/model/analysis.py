@@ -13,7 +13,7 @@ print(len(of_data), len(row_data))
 
 combine = pd.concat([of_data, row_data], axis=1)
 print(combine.head(1))
-interval = 2000
+interval = 1000
 begin = 10000
 picture = combine[['signal1', 'signal0']].iloc[begin:begin + interval]
 picture[picture['signal1'] == picture['signal0']] = 0

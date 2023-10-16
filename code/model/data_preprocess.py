@@ -1,3 +1,4 @@
+import os
 import time
 
 import numpy as np
@@ -16,15 +17,14 @@ def filter(probs, buy_thro, sell_thro):
         else:
             probs[i] = 0
 
-
-if __name__ == '__main__':
-    min_data_size = 2000
+def data_preprocess(file_name, min_data_size=2000, quantile=0.1):
+    min_data_size = min_data_size
 
     # data = pd.read_csv('of_ML_model_output.csv', header=0, index_col=0, names=['timestamp', 'signal', 'mp', 'bp1', 'ap1', 'bv1', 'av1'])
-    data = pd.read_csv('ML_model_output.csv', header=0, index_col=0, names=['timestamp', 'signal', 'mp', 'bp1', 'ap1', 'bv1', 'av1'])
+    data = pd.read_csv(file_name, header=0, index_col=0,
+                       names=['timestamp', 'signal', 'mp', 'bp1', 'ap1', 'bv1', 'av1'])
+    # data = pd.read_csv('model_output.csv', header=0, index_col=0, names=['timestamp', 'signal', 'mp', 'bp1', 'ap1', 'bv1', 'av1'])
     probs = data['signal'].to_numpy()
-    date = data['timestamp'].to_numpy()
-    quantile = 0.3
 
     positive_filter = probs > 0
     negative_filter = probs < 0
@@ -43,6 +43,9 @@ if __name__ == '__main__':
     data = data.iloc[min_data_size:]
     print(data.head(5))
     print(max(data['timestamp'].diff(1).fillna(500)))
-    data.to_csv('model_output_modi.csv', index=False)
-    # data.to_csv('of_model_output_modi.csv', index=False)
+    data.to_csv('/home/biden/PycharmProjects/hftbacktest/code/model/model_output_modi.csv', index=False)
+
+
+if __name__ == '__main__':
+    data_preprocess()
 
