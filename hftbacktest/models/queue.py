@@ -57,7 +57,7 @@ class ProbQueueModel:
         chg = prev_qty - new_qty
         # In order to avoid duplicate order queue position adjustment, subtract queue position change by trades.
         chg = chg - order.q[1]
-        # Reset, as quantity change by trade should be already reflected in qty.
+        # Reset, as quantity change by trade should be already reflected in new_qty.
         order.q[1] = 0
         # For an increase of the quantity, front queue doesn't change by the quantity change.
         if chg < 0:
@@ -109,3 +109,56 @@ class SquareProbQueueModel(ProbQueueModel):
 
     def f(self, x):
         return x ** 2
+
+
+class PowerProbQueueModel(ProbQueueModel):
+    r"""
+    This model uses a power function ``x ** n`` to adjust the probability.
+    """
+
+    def __init__(self, n):
+        self.n = n
+
+    def f(self, x):
+        return x ** self.n
+
+
+class ProbQueueModel2(ProbQueueModel):
+    r"""
+    This model is a variation of the :class:`.ProbQueueModel` that changes the probability calculation to
+    f(back) / f(front + back) from f(back) / (f(front) + f(back)).
+    """
+
+    def prob(self, front, back):
+        return np.divide(self.f(back), self.f(back + front))
+
+
+class LogProbQueueModel2(ProbQueueModel2):
+    r"""
+    This model uses a logarithmic function ``log(1 + x)`` to adjust the probability.
+    """
+
+    def f(self, x):
+        return np.log(1 + x)
+
+
+class ProbQueueModel3(ProbQueueModel):
+    r"""
+    This model is a variation of the :class:`.ProbQueueModel` that changes the probability calculation to
+    1 - f(front / (front + back)) from f(back) / (f(front) + f(back)).
+    """
+
+    def prob(self, front, back):
+        return 1 - self.f(np.divide(front, back + front))
+
+
+class PowerProbQueueModel3(ProbQueueModel3):
+    r"""
+    This model uses a power function ``x ** n`` to adjust the probability.
+    """
+
+    def __init__(self, n):
+        self.n = n
+
+    def f(self, x):
+        return x ** self.n

@@ -2,7 +2,7 @@
 HftBacktest
 ===========
 
-|codacy| |codeql| |pypi| |downloads| |license| |docs|
+|codacy| |codeql| |pypi| |downloads| |license| |docs| |github|
 
 High-Frequency Trading Backtesting Tool in Python
 ====================================================================
@@ -58,7 +58,7 @@ Get a glimpse of what backtesting with hftbacktest looks like with these code sn
         max_position = 5
         half_spread = hbt.tick_size * 20
         skew = 1
-        order_qty = 0.1 
+        order_qty = 0.1
         last_order_id = -1
         order_id = 0
 
@@ -79,13 +79,13 @@ Get a glimpse of what backtesting with hftbacktest looks like with these code sn
             for order in hbt.orders.values():
                 if order.cancellable:
                     hbt.cancel(order.order_id)
-                    last_order_id = order.order_id    
-			
+                    last_order_id = order.order_id
+
             # All order requests are considered to be requested at the same time.
             # Waits until one of the order cancellation responses is received.
             if last_order_id >= 0:
                 hbt.wait_order_response(last_order_id)
-				
+
             # Clears cancelled, filled or expired orders.
             hbt.clear_inactive_orders()
 
@@ -120,7 +120,17 @@ Get a glimpse of what backtesting with hftbacktest looks like with these code sn
             # Records the current state for stat calculation.
             stat.record(hbt)
 
-    
+Tutorials
+=========
+- `Data Preparation <https://hftbacktest.readthedocs.io/en/latest/tutorials/Data%20Preparation.html>`_
+- `Getting Started <https://hftbacktest.readthedocs.io/en/latest/tutorials/Getting%20Started.html>`_
+- `Working with Market Depth and Trades <https://hftbacktest.readthedocs.io/en/latest/tutorials/Working%20with%20Market%20Depth%20and%20Trades.html>`_
+- `Integrating Custom Data <https://hftbacktest.readthedocs.io/en/latest/tutorials/Integrating%20Custom%20Data.html>`_
+- `High-Frequency Grid Trading <https://hftbacktest.readthedocs.io/en/latest/tutorials/High-Frequency%20Grid%20Trading.html>`_
+- `Impact of Order Latency <https://hftbacktest.readthedocs.io/en/latest/tutorials/Impact%20of%20Order%20Latency.html>`_
+- `Guéant–Lehalle–Fernandez-Tapia Market Making Model and Grid Trading <https://hftbacktest.readthedocs.io/en/latest/tutorials/GLFT%20Market%20Making%20Model%20and%20Grid%20Trading.html>`_
+- `Making Multiple Markets <https://hftbacktest.readthedocs.io/en/latest/tutorials/Making%20Multiple%20Markets.html>`_
+
 Examples
 ========
 
@@ -128,30 +138,33 @@ You can find more examples in `examples <https://github.com/nkaz001/hftbacktest/
 
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/hftbacktest.svg?style=plastic
-    :alt: |Python Version
+    :alt: Python Version
     :target: https://badge.fury.io/py/tensorflow
 
 .. |codacy| image:: https://app.codacy.com/project/badge/Grade/e2cef673757a45b18abfc361779feada
-    :alt: |Codacy
+    :alt: Codacy
     :target: https://www.codacy.com/gh/nkaz001/hftbacktest/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nkaz001/hftbacktest&amp;utm_campaign=Badge_Grade
 
 .. |codeql| image:: https://github.com/nkaz001/hftbacktest/actions/workflows/codeql.yml/badge.svg?branch=master&event=push
-    :alt: |CodeQL
+    :alt: CodeQL
     :target: https://github.com/nkaz001/hftbacktest/actions/workflows/codeql.yml
 
 .. |pypi| image:: https://badge.fury.io/py/hftbacktest.svg
-    :alt: |Package Version
+    :alt: Package Version
     :target: https://pypi.org/project/hftbacktest
-    
+
 .. |downloads| image:: https://static.pepy.tech/badge/hftbacktest
-    :alt: |Downloads
+    :alt: Downloads
     :target: https://pepy.tech/project/hftbacktest
 
 .. |license| image:: https://img.shields.io/badge/License-MIT-green.svg
-    :alt: |License
+    :alt: License
     :target: https://github.com/nkaz001/hftbacktest/blob/master/LICENSE
-    
+
 .. |docs| image:: https://readthedocs.org/projects/hftbacktest/badge/?version=latest
     :target: https://hftbacktest.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. |github| image:: https://img.shields.io/github/stars/nkaz001/hftbacktest?style=social
+    :target: https://github.com/nkaz001/hftbacktest
+    :alt: Github

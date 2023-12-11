@@ -243,9 +243,17 @@ class IntpOrderLatency:
 
     def entry(self, timestamp, order, proc):
         if timestamp < self.data[0, 0]:
-            return self.data[0, 1] - self.data[0, 0]
+            # Finds a valid latency.
+            for row_num in range(len(self.data)):
+                if self.data[row_num, 1] > 0 and self.data[row_num, 0] > 0:
+                    return self.data[row_num, 1] - self.data[row_num, 0]
+            raise ValueError
         if timestamp >= self.data[-1, 0]:
-            return self.data[-1, 1] - self.data[-1, 0]
+            # Finds a valid latency.
+            for row_num in range(len(self.data) - 1, -1, -1):
+                if self.data[row_num, 1] > 0 and self.data[row_num, 0] > 0:
+                    return self.data[row_num, 1] - self.data[row_num, 0]
+            raise ValueError
         for row_num in range(self.entry_rn, len(self.data) - 1):
             req_local_timestamp = self.data[row_num, 0]
             next_req_local_timestamp = self.data[row_num + 1, 0]
@@ -255,6 +263,18 @@ class IntpOrderLatency:
                 exch_timestamp = self.data[row_num, 1]
                 next_exch_timestamp = self.data[row_num + 1, 1]
 
+                # The exchange may reject an order request due to technical issues such congestion, this is particularly
+                # common in crypto markets. A timestamp of zero on the exchange represents the occurrence of those kinds
+                # of errors at that time.
+                if exch_timestamp <= 0 or next_exch_timestamp <= 0:
+                    resp_timestamp = self.data[row_num, 2]
+                    next_resp_timestamp = self.data[row_num + 1, 2]
+                    lat1 = resp_timestamp - req_local_timestamp
+                    lat2 = next_resp_timestamp - next_req_local_timestamp
+                    # Negative latency indicates that the order is rejected for technical reasons, and its value
+                    # represents the latency that the local experiences when receiving the rejection notification
+                    return -self.__intp(timestamp, req_local_timestamp, lat1, next_req_local_timestamp, lat2)
+
                 lat1 = exch_timestamp - req_local_timestamp
                 lat2 = next_exch_timestamp - next_req_local_timestamp
                 return self.__intp(timestamp, req_local_timestamp, lat1, next_req_local_timestamp, lat2)
@@ -262,9 +282,17 @@ class IntpOrderLatency:
 
     def response(self, timestamp, order, proc):
         if timestamp < self.data[0, 1]:
-            return self.data[0, 2] - self.data[0, 1]
+            # Finds a valid latency.
+            for row_num in range(len(self.data)):
+                if self.data[row_num, 2] > 0 and self.data[row_num, 1] > 0:
+                    return self.data[row_num, 2] - self.data[row_num, 1]
+            raise ValueError
         if timestamp >= self.data[-1, 1]:
-            return self.data[-1, 2] - self.data[-1, 1]
+            # Finds a valid latency.
+            for row_num in range(len(self.data) -1, -1, -1):
+                if self.data[row_num, 2] > 0 and self.data[row_num, 1] > 0:
+                    return self.data[row_num, 2] - self.data[row_num, 1]
+            raise ValueError
         for row_num in range(self.resp_rn, len(self.data) - 1):
             exch_timestamp = self.data[row_num, 1]
             next_exch_timestamp = self.data[row_num + 1, 1]
@@ -276,7 +304,18 @@ class IntpOrderLatency:
 
                 lat1 = resp_local_timestamp - exch_timestamp
                 lat2 = next_resp_local_timestamp - next_exch_timestamp
-                return self.__intp(timestamp, exch_timestamp, lat1, next_exch_timestamp, lat2)
+
+                if exch_timestamp <= 0 and next_exch_timestamp <= 0:
+                    raise ValueError
+                elif exch_timestamp <= 0:
+                    return lat2
+                elif next_exch_timestamp <= 0:
+                    return lat1
+
+                lat = self.__intp(timestamp, exch_timestamp, lat1, next_exch_timestamp, lat2)
+                if lat < 0:
+                    raise ValueError('Response latency cannot be negative.')
+                return lat
         raise ValueError
 
     def reset(self):

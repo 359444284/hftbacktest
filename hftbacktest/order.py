@@ -15,6 +15,7 @@ FILLED = 3
 CANCELED = 4
 PARTIALLY_FILLED = 5
 MODIFY = 6
+REJECTED = 7
 
 GTC = 0  # Good 'till cancel
 GTX = 1  # Post only
@@ -89,6 +90,9 @@ class Order:
         return self.status == NEW and self.req == NONE
 
     def copy(self):
+        """
+        Return copy of current instance of Order class with current attributes
+        """
         order = Order(
             self.order_id,
             self.price_tick,
@@ -129,6 +133,15 @@ class OrderBus:
 
     def append(self, order, timestamp):
         timestamp = int(timestamp)
+
+        # Prevents the order sequence from being out of order.
+        # In crypto exchanges that use REST APIs, it might be still possible for order requests sent later to reach the
+        # matching engine before order requests sent earlier. But, for the purpose of simplifying the backtesting
+        # process, all requests and responses are assumed to be in order.
+        if len(self.order_list) > 0:
+            _, latest_timestamp = self.order_list[-1]
+            if timestamp < latest_timestamp:
+                timestamp = latest_timestamp
 
         self.order_list.append((order, timestamp))
 

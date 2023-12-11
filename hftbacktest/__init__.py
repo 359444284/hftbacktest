@@ -2,7 +2,7 @@ from typing import Union, List, Optional
 
 import numpy as np
 import pandas as pd
-from numba import boolean, int64, typeof
+from numba import boolean, int64, float64, typeof
 from numba.experimental import jitclass
 
 from .assettype import (
@@ -30,7 +30,10 @@ from .models.queue import (
     RiskAverseQueueModel as RiskAverseQueueModel_,
     LogProbQueueModel as LogProbQueueModel_,
     IdentityProbQueueModel as IdentityProbQueueModel_,
-    SquareProbQueueModel as SquareProbQueueModel_
+    SquareProbQueueModel as SquareProbQueueModel_,
+    PowerProbQueueModel as PowerProbQueueModel_,
+    LogProbQueueModel2 as LogProbQueueModel2_,
+    PowerProbQueueModel3 as PowerProbQueueModel3_
 )
 from .order import BUY, SELL, NONE, NEW, EXPIRED, FILLED, CANCELED, MODIFY, GTC, GTX, Order, OrderBus
 from .proc.local import Local
@@ -115,6 +118,9 @@ __all__ = (
     'LogProbQueueModel',
     'IdentityProbQueueModel',
     'SquareProbQueueModel',
+    'PowerProbQueueModel',
+    'LogProbQueueModel2',
+    'PowerProbQueueModel3',
 
     'HftBacktest',
     'Order',
@@ -128,7 +134,7 @@ __all__ = (
     'correct'
 )
 
-__version__ = '1.6.2'
+__version__ = '1.7.1'
 
 
 # JIT'ed latency models
@@ -143,6 +149,9 @@ RiskAverseQueueModel = jitclass()(RiskAverseQueueModel_)
 LogProbQueueModel = jitclass()(LogProbQueueModel_)
 IdentityProbQueueModel = jitclass()(IdentityProbQueueModel_)
 SquareProbQueueModel = jitclass()(SquareProbQueueModel_)
+PowerProbQueueModel = jitclass(spec=[('n', float64)])(PowerProbQueueModel_)
+LogProbQueueModel2 = jitclass()(LogProbQueueModel2_)
+PowerProbQueueModel3 = jitclass(spec=[('n', float64)])(PowerProbQueueModel3_)
 
 # JIT'ed asset types
 LinearAsset = jitclass()(LinearAsset_)
